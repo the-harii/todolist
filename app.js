@@ -91,19 +91,20 @@ app.post("/", function(req, res){
 
 app.post("/delete",function(req, res){
   const checkedItemId = req.body.checkBox;
-  const listName= req.body.listName;
-  
-  if(listName === "Today"){
-    Item.findByIdAndRemove(checkedItemId).then(function(){
-      console.log("successfully removed "+checkedItemId);
-      res.redirect("/");
-    }).catch(error=>{
-      console.log(error);
-    });
+  const listName= req.body.listName; 
+  if (listName === "Today") {
+    Item.findByIdAndRemove(checkedItemId).then(function(deleted){
+      if(deleted){
+        console.log("Item Removed Successfully");
+        res.redirect("/");
+      }
+    }).catch(err=>{
+      console.log(err);
+    })
   }
   else{
     List.findOneAndUpdate({name:listName},{$pull:{items: {_id:checkedItemId}}})
-    .then(function(err,foundList){
+    .then(function(foundList){
       if(foundList){
         res.redirect("/"+listName);
       }
